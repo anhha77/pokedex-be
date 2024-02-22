@@ -194,7 +194,8 @@ router.put("/:id", (req, res, next) => {
   try {
     let { id } = req.params;
     id = parseInt(id);
-    let { name, url, types } = req.body;
+    let { name, imgUrl, types } = req.body;
+
     let db = fs.readFileSync("pokemons.json", "utf-8");
     db = JSON.parse(db);
     let { data } = db;
@@ -213,22 +214,21 @@ router.put("/:id", (req, res, next) => {
       pokemonUpdate.name = name;
     }
 
-    if (url) {
+    if (imgUrl) {
       pokemonUpdate.url = faker.image.url();
     }
 
-    if (types.length > 0) {
-      types.forEach((type) => {
+    types.forEach((type, index) => {
+      if (type !== null) {
+        console.log("hi");
         if (!pokemonTypes.includes(type)) {
           const exception = new Error("Pokemon's types is not valid");
           exception.statusCode = 401;
           throw exception;
         }
-      });
-      types.forEach((type, index) => {
         pokemonUpdate.types[index] = type;
-      });
-    }
+      }
+    });
 
     data.splice(pokemonUpdateIndexInArray, 1, pokemonUpdate);
 
