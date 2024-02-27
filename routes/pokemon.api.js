@@ -3,6 +3,7 @@ const fs = require("fs");
 const { faker } = require("@faker-js/faker");
 const path = require("path");
 var router = express.Router();
+const dir = path.join(process.cwd(), "pokemons.json");
 
 // Get pokemons
 router.get("/", (req, res, next) => {
@@ -23,7 +24,7 @@ router.get("/", (req, res, next) => {
     });
 
     let offset = limit * (page - 1);
-    let db = fs.readFileSync("pokemons.json", "utf-8");
+    let db = fs.readFileSync(dir, "utf-8");
     db = JSON.parse(db);
     const { data } = db;
 
@@ -48,7 +49,7 @@ router.get("/", (req, res, next) => {
 router.get("/:id", (req, res, next) => {
   try {
     let { id: pokemonId } = req.params;
-    let db = fs.readFileSync("pokemons.json", "utf-8");
+    let db = fs.readFileSync(dir, "utf-8");
     db = JSON.parse(db);
     let { data } = db;
     pokemonId = parseInt(pokemonId);
@@ -128,9 +129,6 @@ router.post("/", (req, res, next) => {
       }
     });
 
-    const dir = path.join(process.cwd(), "pokemons.json");
-    // console.log("-------", dir);
-
     let db = fs.readFileSync(dir, "utf-8");
     db = JSON.parse(db);
     let { data, totalPokemons } = db;
@@ -200,7 +198,7 @@ router.put("/:id", (req, res, next) => {
     id = parseInt(id);
     let { name, imgUrl, types } = req.body;
 
-    let db = fs.readFileSync("pokemons.json", "utf-8");
+    let db = fs.readFileSync(dir, "utf-8");
     db = JSON.parse(db);
     let { data } = db;
 
@@ -238,7 +236,7 @@ router.put("/:id", (req, res, next) => {
 
     db.data = data;
 
-    fs.writeFileSync("pokemons.json", JSON.stringify(db));
+    fs.writeFileSync(dir, JSON.stringify(db));
     res.status(200).send("Success");
   } catch (error) {
     next(error);
@@ -249,14 +247,14 @@ router.delete("/:id", (req, res, next) => {
   try {
     let { id } = req.params;
     id = parseInt(id);
-    let db = fs.readFileSync("pokemons.json", "utf-8");
+    let db = fs.readFileSync(dir, "utf-8");
     db = JSON.parse(db);
     let { data, totalPokemons } = db;
     data = data.filter((item) => item.id !== id);
     totalPokemons -= 1;
     db.totalPokemons = totalPokemons;
     db.data = data;
-    fs.writeFileSync("pokemons.json", JSON.stringify(db));
+    fs.writeFileSync(dir, JSON.stringify(db));
     res.status(200).send("Success");
   } catch (error) {
     next(error);
