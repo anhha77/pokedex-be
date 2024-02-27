@@ -167,7 +167,7 @@ router.post("/", (req, res, next) => {
     db.data = data;
     db.totalPokemons = totalPokemons;
 
-    fs.writeFileSync("pokemons.json", JSON.stringify(db));
+    fs.writeFileSync(dir, JSON.stringify(db));
     res.status(201).send("Success");
   } catch (error) {
     next(error);
