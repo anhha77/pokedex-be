@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const { faker } = require("@faker-js/faker");
+const path = require("path");
 var router = express.Router();
 
 // Get pokemons
@@ -57,9 +58,9 @@ router.get("/:id", (req, res, next) => {
     let nextPokemonId = null;
     let result = {};
     if (pokemonId === data[data.length - 1].id) {
-      nextPokemonId = 1;
+      nextPokemonId = data[0].id;
       previousPokemonId = data[data.length - 2].id;
-    } else if (pokemonId === 1) {
+    } else if (pokemonId === data[0].id) {
       previousPokemonId = data[data.length - 1].id;
       nextPokemonId = pokemonId + 1;
     } else {
@@ -127,7 +128,10 @@ router.post("/", (req, res, next) => {
       }
     });
 
-    let db = fs.readFileSync("pokemons.json", "utf-8");
+    const dir = path.join(process.cwd(), "pokemons.json");
+    // console.log("-------", dir);
+
+    let db = fs.readFileSync(dir, "utf-8");
     db = JSON.parse(db);
     let { data, totalPokemons } = db;
     data.forEach((pokemon) => {
@@ -164,7 +168,7 @@ router.post("/", (req, res, next) => {
     db.totalPokemons = totalPokemons;
 
     fs.writeFileSync("pokemons.json", JSON.stringify(db));
-    res.status(200).send("Success");
+    res.status(201).send("Success");
   } catch (error) {
     next(error);
   }
@@ -253,6 +257,7 @@ router.delete("/:id", (req, res, next) => {
     db.totalPokemons = totalPokemons;
     db.data = data;
     fs.writeFileSync("pokemons.json", JSON.stringify(db));
+    res.status(200).send("Success");
   } catch (error) {
     next(error);
   }
